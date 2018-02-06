@@ -1,0 +1,5 @@
+SGCircuitBreaker:
+  image: ibmcom/swift-ubuntu:latest
+  volumes:
+    - .:/root/SGCircuitBreaker
+  command: bash -c "cd /root/SGCircuitBreaker && swift build && swift test"

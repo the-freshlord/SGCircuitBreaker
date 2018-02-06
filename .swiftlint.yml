@@ -1,0 +1,38 @@
+included:
+  - Sources
+  - Tests
+
+excluded:
+  - Package.swift
+
+opt_in_rules:
+  - closure_end_indentation
+  - closure_spacing
+  - empty_count
+  - explicit_init
+  - fatal_error_message
+  - first_where
+  - multiline_parameters
+  - operator_usage_whitespace
+  - overridden_super_call
+  - private_outlet
+  - trailing_closure
+  - vertical_parameter_alignment_on_call
+
+disabled_rules:
+  - empty_enum_arguments
+  - file_length
+  - function_body_length
+  - private_over_fileprivate
+  - todo
+  - trailing_whitespace
+  - type_body_length
+  - valid_ibinspectable
+  - vertical_whitespace
+
+reporter: "xcode"
+
+large_tuple: 4
+function_parameter_count: 6
+line_length: 110
+cyclomatic_complexity: 15
