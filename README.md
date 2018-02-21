@@ -64,7 +64,7 @@ import PackageDescription
 let package = Package(
     name: "YOUR_PROJECT_NAME",
     dependencies: [
-        .package(url: "https://github.com/eman6576/SGCircuitBreaker.git", from: "1.0.0")
+        .package(url: "https://github.com/eman6576/SGCircuitBreaker.git", from: "1.0.1")
     ],
     targets: [
         .target(
