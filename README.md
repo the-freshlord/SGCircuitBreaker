@@ -5,6 +5,8 @@ A Swift implementation of the Circuit Breaker design pattern
 [![Build Status](https://travis-ci.org/eman6576/SGCircuitBreaker.svg?branch=master)](https://travis-ci.org/eman6576/SGCircuitBreaker)
 [![codecov](https://codecov.io/gh/eman6576/SGCircuitBreaker/branch/master/graph/badge.svg)](https://codecov.io/gh/eman6576/SGCircuitBreaker)
 ![Swift 4.0](https://img.shields.io/badge/Swift-4.0-orange.svg?style=flat)
+[![CocoaPods](https://img.shields.io/cocoapods/v/SGSwiftyBind.svg)](https://cocoapods.org/pods/SGCircuitBreaker)
+[![Carthage](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![DUB](https://img.shields.io/dub/l/vibe-d.svg)](https://github.com/eman6576/SGCircuitBreaker/blob/master/LICENSE)
 [![platform](https://img.shields.io/badge/platform-iOS%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
