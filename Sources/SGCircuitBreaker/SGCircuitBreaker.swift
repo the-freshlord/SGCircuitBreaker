@@ -54,7 +54,7 @@ public class SGCircuitBreaker {
     /// Number of failures allowed for retrying to performing the registered work before tripping.
     public let maxFailures: Int
     
-    /// The current state of the circuit breaker
+    /// The current state of the circuit breaker.
     public var state: BreakerState {
         if let lastFailureTime = self.lastFailureTime,
            failureCount > maxFailures &&
@@ -161,7 +161,7 @@ public extension SGCircuitBreaker {
 // MARK: - Public Instance Methods For Resetting
 public extension SGCircuitBreaker {
     
-    /// Resets the circuit breaker
+    /// Resets the circuit breaker.
     func reset() {
         timer?.invalidate()
         failureCount = 0
