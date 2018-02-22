@@ -27,8 +27,8 @@ This is a light weigth implementation of the [Circuit Breaker](https://martinfow
 
 ## Platforms
 
-* iOS: 10.0 and greater
-* macOS: 10.12 and greater
+* iOS: 9.0 and greater
+* macOS: 10.9 and greater
 * Linux
 
 ## Install
@@ -64,7 +64,7 @@ import PackageDescription
 let package = Package(
     name: "YOUR_PROJECT_NAME",
     dependencies: [
-        .package(url: "https://github.com/eman6576/SGCircuitBreaker.git", from: "1.0.1")
+        .package(url: "https://github.com/eman6576/SGCircuitBreaker.git", from: "1.1.0")
     ],
     targets: [
         .target(
@@ -75,35 +75,6 @@ let package = Package(
     ]
 )
 ```
-
-**NB** When building, testing or generating an Xcode project using the Swift Package Manager on macOS, it will set the deployment target to `x86_64-apple-macosx10.9`. Target `x86_64-apple-macosx10.12` needs to be used since the block based APIs for `Timer` are being used. When running any build, test or generate Xcode project commands, you can specify the deployment target like so:
-
-#### Build
-
-```bash
-$ swift build -Xswiftc "-target" -Xswiftc "x86_64-apple-macosx10.12"
-```
-
-#### Test
-
-```bash
-$ swift test -Xswiftc "-target" -Xswiftc "x86_64-apple-macosx10.12"
-```
-
-#### Generate Xcode Project File
-
-First create a `Package.xcconfig` in the root of your project. The contents of the file should look like this:
-```
-MACOSX_DEPLOYMENT_TARGET=10.12
-```
-
-Then when generating a Xcode project file, specify the configuration file to use like so:
-
-```bash
-$ swift package generate-xcodeproj --xcconfig-overrides Package.xcconfig
-```
-
-See the [Makefile](Makefile) for reference on how to use the commands.
 
 ## Usage
 
