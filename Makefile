@@ -10,19 +10,19 @@ help:
 .DEFAULT_GOAL := help
 
 project:
-	swift package generate-xcodeproj --xcconfig-overrides Package.xcconfig
+	swift package generate-xcodeproj
 
 open_xcodeproj:
 	open SGCircuitBreaker.xcodeproj
 
 build:
-	swift build -Xswiftc "-target" -Xswiftc "x86_64-apple-macosx10.12"
+	swift build 
 
 clean: ## Cleans the project
 	swift package clean
 
 test: 
-	swift test -Xswiftc "-target" -Xswiftc "x86_64-apple-macosx10.12"
+	swift test
 
 test_linux: ## Complies and run unit tests in Linux using Docker
 	docker-compose up

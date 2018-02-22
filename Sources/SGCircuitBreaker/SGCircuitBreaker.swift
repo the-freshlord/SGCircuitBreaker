@@ -20,6 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+import Dispatch
 import Foundation
 
 // MARK: - Breaker State Enum
@@ -89,10 +90,23 @@ public class SGCircuitBreaker {
     // MARK: - Private Instance Attributes For Timer
     
     /// The timer to use.
-    private var timer: Timer?
+    private var dispatchTimer: DispatchSourceTimer
     
     /// The time interval for the last failure.
     private var lastFailureTime: TimeInterval?
+    
+    
+    /// An enum thst keeps track of the state of the timer.
+    ///
+    /// - suspended: The timer is not being used.
+    /// - resumed: The timer is being used.
+    private enum TimerState {
+        case suspended
+        case resumed
+    }
+    
+    /// The current state of the timer.
+    private var timerState: TimerState = .suspended
     
     
     // MARK: - Initializers
@@ -110,6 +124,7 @@ public class SGCircuitBreaker {
         self.timeout = timeout
         self.maxFailures = maxFailures
         self.retryDelay = retryDelay
+        dispatchTimer = DispatchSource.makeTimerSource()
     }
 }
 
@@ -119,7 +134,6 @@ public extension SGCircuitBreaker {
     
     /// Starts the circuit breaker.
     func start() {
-        timer?.invalidate()
         switch state {
         case .open:
             tripCircuit()
@@ -142,7 +156,10 @@ public extension SGCircuitBreaker {
     ///
     /// - Parameter error: An `Error` representing the error that occured.
     func failure(error: Error? = nil) {
-        timer?.invalidate()
+        if timerState == .resumed {
+            dispatchTimer.suspend()
+            timerState = .suspended
+        }
         lastError = error
         failureCount += 1
         lastFailureTime = Date().timeIntervalSince1970
@@ -163,7 +180,10 @@ public extension SGCircuitBreaker {
     
     /// Resets the circuit breaker.
     func reset() {
-        timer?.invalidate()
+        if timerState == .resumed {
+            dispatchTimer.suspend()
+            timerState = .suspended
+        }
         failureCount = 0
         lastFailureTime = nil
         lastError = nil
@@ -176,17 +196,23 @@ private extension SGCircuitBreaker {
     
     /// Starts the timer for when the registered work timesout.
     func startTimeoutTimer() {
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: timeout, repeats: false) { [weak self] _ in
+        let time: DispatchTime = .now() + timeout
+        dispatchTimer.schedule(deadline: time)
+        dispatchTimer.setEventHandler { [weak self] in
             self?.failure()
         }
+        timerState = .resumed
+        dispatchTimer.resume()
     }
     
     func startRetryDelayTimer() {
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: retryDelay, repeats: false) { [weak self] _ in
+        let time: DispatchTime = .now() + retryDelay
+        dispatchTimer.schedule(deadline: time)
+        dispatchTimer.setEventHandler { [weak self] in
             self?.beginWork()
         }
+        timerState = .resumed
+        dispatchTimer.resume()
     }
 }
 
@@ -202,6 +228,10 @@ private extension SGCircuitBreaker {
     
     /// Begins the work to be performed.
     func beginWork() {
+        if timerState == .resumed {
+            dispatchTimer.suspend()
+            timerState = .suspended
+        }
         workToPerform?(self)
         startTimeoutTimer()
     }
