@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name                  = "SGCircuitBreaker"
-    s.version               = "1.1.1"
+    s.version               = "1.1.2"
     s.summary               = "A Swift implementation of the Circuit Breaker design pattern"
     s.homepage              = "https://github.com/eman6576/SGCircuitBreaker"
     s.license               = { :type => "MIT" }
