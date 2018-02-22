@@ -55,6 +55,9 @@ public class SGCircuitBreaker {
     /// Number of failures allowed for retrying to performing the registered work before tripping.
     public let maxFailures: Int
     
+    /// Current number of failures.
+    public private(set) var failureCount = 0
+    
     /// The current state of the circuit breaker.
     public var state: BreakerState {
         if let lastFailureTime = self.lastFailureTime,
@@ -79,9 +82,6 @@ public class SGCircuitBreaker {
     
     
     // MARK: - Private Instance Attributes For Circuit Breaker Behavior
-    
-    /// Current number of failures.
-    private(set) var failureCount = 0
     
     /// The last reported error.
     private var lastError: Error?
