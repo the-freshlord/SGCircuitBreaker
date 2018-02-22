@@ -90,7 +90,7 @@ public class SGCircuitBreaker {
     // MARK: - Private Instance Attributes For Timer
     
     /// The timer to use.
-    private var dispatchTimer: DispatchSourceTimer
+    private var scheduler: Scheduler?
     
     /// The time interval for the last failure.
     private var lastFailureTime: TimeInterval?
@@ -124,7 +124,6 @@ public class SGCircuitBreaker {
         self.timeout = timeout
         self.maxFailures = maxFailures
         self.retryDelay = retryDelay
-        dispatchTimer = DispatchSource.makeTimerSource()
     }
     
     
@@ -132,9 +131,8 @@ public class SGCircuitBreaker {
     
     /// Deinitializes an instance of `SGCircuitBreaker`.
     deinit {
-        dispatchTimer.setEventHandler {}
-        dispatchTimer.cancel()
-        dispatchTimer.resume()
+        scheduler?.suspend()
+        scheduler = nil
     }
 }
 
@@ -166,10 +164,7 @@ public extension SGCircuitBreaker {
     ///
     /// - Parameter error: An `Error` representing the error that occured.
     func failure(error: Error? = nil) {
-        if timerState == .resumed {
-            dispatchTimer.suspend()
-            timerState = .suspended
-        }
+        scheduler?.suspend()
         lastError = error
         failureCount += 1
         lastFailureTime = Date().timeIntervalSince1970
@@ -190,10 +185,7 @@ public extension SGCircuitBreaker {
     
     /// Resets the circuit breaker.
     func reset() {
-        if timerState == .resumed {
-            dispatchTimer.suspend()
-            timerState = .suspended
-        }
+        scheduler?.suspend()
         failureCount = 0
         lastFailureTime = nil
         lastError = nil
@@ -206,23 +198,21 @@ private extension SGCircuitBreaker {
     
     /// Starts the timer for when the registered work timesout.
     func startTimeoutTimer() {
-        let time: DispatchTime = .now() + timeout
-        dispatchTimer.schedule(deadline: time)
-        dispatchTimer.setEventHandler { [weak self] in
+        scheduler?.suspend()
+        scheduler = Scheduler(startTime: timeout)
+        scheduler?.task = { [weak self] in
             self?.failure()
         }
-        timerState = .resumed
-        dispatchTimer.resume()
+        scheduler?.resume()
     }
     
     func startRetryDelayTimer() {
-        let time: DispatchTime = .now() + retryDelay
-        dispatchTimer.schedule(deadline: time)
-        dispatchTimer.setEventHandler { [weak self] in
+        scheduler?.suspend()
+        scheduler = Scheduler(startTime: retryDelay)
+        scheduler?.task = { [weak self] in
             self?.beginWork()
         }
-        timerState = .resumed
-        dispatchTimer.resume()
+        scheduler?.resume()
     }
 }
 
@@ -238,11 +228,8 @@ private extension SGCircuitBreaker {
     
     /// Begins the work to be performed.
     func beginWork() {
-        if timerState == .resumed {
-            dispatchTimer.suspend()
-            timerState = .suspended
-        }
-        workToPerform?(self)
+        scheduler?.suspend()
         startTimeoutTimer()
+        workToPerform?(self)
     }
 }
