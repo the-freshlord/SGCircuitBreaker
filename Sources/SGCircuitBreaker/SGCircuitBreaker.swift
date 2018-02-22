@@ -126,6 +126,16 @@ public class SGCircuitBreaker {
         self.retryDelay = retryDelay
         dispatchTimer = DispatchSource.makeTimerSource()
     }
+    
+    
+    // MARK: - Deinitializers
+    
+    /// Deinitializes an instance of `SGCircuitBreaker`.
+    deinit {
+        dispatchTimer.setEventHandler {}
+        dispatchTimer.cancel()
+        dispatchTimer.resume()
+    }
 }
 
 
