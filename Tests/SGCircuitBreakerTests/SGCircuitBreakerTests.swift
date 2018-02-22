@@ -50,6 +50,8 @@ final class SGCircuitBreakerTests: XCTestCase {
         circuitBreaker.reset()
         circuitBreaker.workToPerform = nil
         circuitBreaker.tripped = nil
+        circuitBreaker = nil
+        mockService = nil
     }
 }
 
