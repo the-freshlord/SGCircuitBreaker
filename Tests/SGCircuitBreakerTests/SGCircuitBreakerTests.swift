@@ -66,8 +66,10 @@ extension SGCircuitBreakerTests {
                 XCTAssertNotNil(data, "Value should not be nil")
                 XCTAssertNil(error, "Value should be nil")
                 circuitBreaker.success()
-                successExpectation.fulfill()
             }
+        }
+        circuitBreaker.successful = { _ in
+            successExpectation.fulfill()
         }
         circuitBreaker.start()
         waitForExpectations(timeout: 10, handler: nil)
