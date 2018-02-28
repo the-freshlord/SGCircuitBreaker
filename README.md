@@ -89,13 +89,13 @@ import SGCircuitBreaker
 We can instantiate an instance of `SGCircuitBreaker` in one of two ways:
 
 ```swift
-let circuitBreaker = CircuitBreaker()
+let circuitBreaker = SGCircuitBreaker()
 ```
 
 using the default configuration or like
 
 ```swift
-let circuitBreaker = CircuitBreaker(
+let circuitBreaker = SGCircuitBreaker(
     timeout: 20,
     maxFailures: 4,
     retyDelay: 3
@@ -118,7 +118,7 @@ circuitBreaker.workToPerform = { [weak self] (circuitBreaker) in
 }
 ```
 
-Here we register the work that needs to be performed. The work is calling an asynchronous method on `mockService` that could fail. In the closure for the method `call`, we check if an error occured. If it did, we report to the circuit breaker that the work failed by calling `circuitBreaker.failure(error: error)` and pass the error. This will check if the maximum amount of failures have been met or not. If the maximum amount hasn't been met, then the circuit breaker would wait for a certain amount of time perform trying the work again. The circuit breaker would be in the `halfOpened` state. If the maximum amount of failures are met, then the circuit breaker trips. If an error didn't occur, then we report to the circuit breaker that the work was successful by calling `circuitBreaker.success()`. This will reset the circuit breaker to its initial state to `closed`.
+Here we register the work that needs to be performed. The work is calling an asynchronous method on `mockService` that could fail. In the closure for the method `call`, we check if an error occured. If it did, we report to the circuit breaker that the work failed by calling `circuitBreaker.failure(error: error)` and pass the error. This will check if the maximum amount of failures have been met or not. If the maximum amount hasn't been met, then the circuit breaker would wait for a certain amount of time before trying the work again. The circuit breaker would be in the `halfOpened` state. If the maximum amount of failures are met, then the circuit breaker trips. If an error didn't occur, then we report to the circuit breaker that the work was successful by calling `circuitBreaker.success()`. This will reset the circuit breaker to its initial state of `closed`.
 
 Now what happens if the circuit breaker trips. We want to be able to handle this and perform any error handling logic neccessary that will not break our application. We can register how to handle the circuit breaker tripping like so:
 
@@ -156,7 +156,7 @@ circuitBreaker.start()
 Here is a full example of how the circuit breaker would be used:
 
 ```swift
-let circuitBreaker = CircuitBreaker(
+let circuitBreaker = SGCircuitBreaker(
     timeout: 20,
     maxFailures: 4,
     retyDelay: 3
@@ -211,6 +211,26 @@ circuitBreaker.start()
 
 * `failureCount`: Current number of failures.
 * `state`: The current state of the circuit breaker. Can be either `open`, `halfOpened`, or `closed`.
+
+### Logging
+
+`SGCircuitBreaker` can log to the console different events that occur within the circuit breaker. By default, this is not enabled. If you would like to enable it you can enable it when creating an instance like so:
+
+```swift
+let circuitBreaker = SGCircuitBreaker(loggingEnabled: true)
+```
+
+You can also change this property at anytime as well:
+
+```swift
+circuitBreaker.loggingEnabled = true
+```
+
+When an event is logged, this is what it would look like in the console:
+
+```
+SGCircuitBreaker: Registered work was successful. 🎉
+```
 
 ### Tests
 See [SGCircuitBreakerTests.swift](https://github.com/eman6576/SGCircuitBreaker/blob/master/Tests/SGCircuitBreakerTests/SGCircuitBreakerTests.swift) for some examples on how to use it.

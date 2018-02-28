@@ -47,7 +47,6 @@ final class SGCircuitBreakerTests: XCTestCase {
     
     override func tearDown() {
         super.tearDown()
-        circuitBreaker.reset()
         circuitBreaker.workToPerform = nil
         circuitBreaker.tripped = nil
         circuitBreaker = nil
@@ -60,7 +59,7 @@ final class SGCircuitBreakerTests: XCTestCase {
 extension SGCircuitBreakerTests {
     func testSuccess() {
         let successExpectation = expectation(description: "Test register success")
-        circuitBreaker = SGCircuitBreaker()
+        circuitBreaker = SGCircuitBreaker(loggingEnabled: true)
         circuitBreaker.workToPerform = { [weak self] (circuitBreaker) in
             self?.mockService.success { (data, error) in
                 XCTAssertNotNil(data, "Value should not be nil")
@@ -77,7 +76,7 @@ extension SGCircuitBreakerTests {
     
     func testFailure() {
         let failureExpectation = expectation(description: "Test register failure")
-        circuitBreaker = SGCircuitBreaker(maxFailures: 1)
+        circuitBreaker = SGCircuitBreaker(maxFailures: 1, loggingEnabled: true)
         circuitBreaker.workToPerform = { [weak self] (circuitBreaker) in
             self?.mockService.failure { (data, error) in
                 XCTAssertNil(data, "Value should be nil")
@@ -95,7 +94,7 @@ extension SGCircuitBreakerTests {
     func testTimeout() {
         let timeoutExpectation = expectation(description: "Test timeout")
         let successExpectation = expectation(description: "Test success timeout")
-        circuitBreaker = SGCircuitBreaker(timeout: 3)
+        circuitBreaker = SGCircuitBreaker(timeout: 3, loggingEnabled: true)
         circuitBreaker.workToPerform = { [weak self] (circuitBreaker) in
             switch circuitBreaker.failureCount {
             case 0:
@@ -117,7 +116,7 @@ extension SGCircuitBreakerTests {
     
     func testTripped() {
         let didTripExpectation = expectation(description: "Test did trip")
-        circuitBreaker = SGCircuitBreaker(maxFailures: 1)
+        circuitBreaker = SGCircuitBreaker(maxFailures: 1, loggingEnabled: true)
         circuitBreaker.tripped = { (circuitBreaker, error) in
             XCTAssertEqual(circuitBreaker.state, .open, "Circuit breaker should be opened")
             XCTAssertEqual(
@@ -130,7 +129,6 @@ extension SGCircuitBreakerTests {
                     return
             }
             XCTAssertEqual(mockError.code, 400, "Circuit breaker maintained incorrect error")
-            circuitBreaker.reset()
             didTripExpectation.fulfill()
         }
         circuitBreaker.workToPerform = { [weak self] (circuitBreaker) in
