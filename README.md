@@ -64,14 +64,15 @@ import PackageDescription
 let package = Package(
     name: "YOUR_PROJECT_NAME",
     dependencies: [
-        .package(url: "https://github.com/eman6576/SGCircuitBreaker.git", .upToNextMajor(from: "1.1.2"))
+        .package(url: "https://github.com/eman6576/SGCircuitBreaker.git", .upToNextMajor(from: "1.1.3"))
     ],
     targets: [
         .target(
             name: "YOUR_TARGET_NAME",
             dependencies: [
                 "SGCircuitBreaker"
-            ])
+            ]
+        )
     ]
 )
 ```
