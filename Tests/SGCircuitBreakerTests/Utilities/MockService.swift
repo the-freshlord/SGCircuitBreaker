@@ -32,6 +32,10 @@ typealias Completion = (Data?, Error?) -> Void
 /// Test class used representing a service that could fail.
 final class MockService {
     
+    // MARK: - Private Instance Attributes
+    private var sessionTask: URLSessionDataTask?
+    
+    
     // MARK: - Public Instance Methods
     
     /// Performs a success.
@@ -59,6 +63,11 @@ final class MockService {
             completion(nil, error)
         }
     }
+    
+    /// Cancels an ongoing request.
+    func cancel() {
+        sessionTask?.cancel()
+    }
 }
 
 
@@ -73,11 +82,11 @@ private extension MockService {
     func performRequest(path: String, completion: @escaping Completion) {
         let session = URLSession.defaultSession
         let url = URL(string: "https://httpbin.org/\(path)")!
-        let task = session.dataTask(with: url) { (data, _, error) in
+        sessionTask = session.dataTask(with: url) { (data, _, error) in
             DispatchQueue.main.async {
                 completion(data, error)
             }
         }
-        task.resume()
+        sessionTask?.resume()
     }
 }
