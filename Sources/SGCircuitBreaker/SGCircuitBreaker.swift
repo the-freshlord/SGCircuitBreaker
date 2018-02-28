@@ -89,6 +89,12 @@ public class SGCircuitBreaker {
     public let retryDelay: TimeInterval
     
     
+    // MARK: - Public Instance Attributes For Logging
+    
+    /// Determines if the behavior of the circuit breaker should be logged.
+    public var loggingEnabled: Bool
+    
+    
     // MARK: - Private Instance Attributes For Circuit Breaker Behavior
     
     /// The last reported error.
@@ -106,7 +112,7 @@ public class SGCircuitBreaker {
     
     // MARK: - Initializers
     
-    /// Initializes an instance of `SGCircuitBreaker`
+    /// Initializes an instance of `SGCircuitBreaker`.
     ///
     /// - Parameters:
     ///   - timeout: A `TimeInterval` representing how long the registered work has to finish before throwing
@@ -114,11 +120,17 @@ public class SGCircuitBreaker {
     ///   - maxFailures: An `Int` representing the number of failures allowed for retrying to performing the
     ///                  registered work before tripping. Defaults to 3.
     ///   - retryDelay: A `TimeInterval` representing how long to wait before retrying the registered work
-    ///                 after a failure. Defailts to 2.
-    public init(timeout: TimeInterval = 10, maxFailures: Int = 3, retryDelay: TimeInterval = 2) {
+    ///                 after a failure. Defaults to 2.
+    ///   - loggingEnabled: A `Bool` indicating of the behavior of the circuit breaker should be logged.
+    ///                     Defaults to `false`.
+    public init(timeout: TimeInterval = 10,
+                maxFailures: Int = 3,
+                retryDelay: TimeInterval = 2,
+                loggingEnabled: Bool = false) {
         self.timeout = timeout
         self.maxFailures = maxFailures
         self.retryDelay = retryDelay
+        self.loggingEnabled = loggingEnabled
     }
     
     
@@ -152,6 +164,7 @@ public extension SGCircuitBreaker {
     
     /// Reports to the circuit breaker that the registered work was successful.
     func success() {
+        log("Registered work was successful. 🎉")
         reset()
         successful?(self)
     }
@@ -160,6 +173,7 @@ public extension SGCircuitBreaker {
     ///
     /// - Parameter error: An `Error` representing the error that occured.
     func failure(error: Error? = nil) {
+        log("A failure has been reported! ❌")
         scheduler?.suspend()
         lastError = error
         failureCount += 1
@@ -185,6 +199,7 @@ public extension SGCircuitBreaker {
         failureCount = 0
         lastFailureTime = nil
         lastError = nil
+        log("Circuit breaker has been reset. 🛠")
     }
 }
 
@@ -198,13 +213,16 @@ private extension SGCircuitBreaker {
         scheduler = Scheduler(startTime: timeout)
         scheduler?.task = { [weak self] in
             guard let strongSelf = self else { return }
+            strongSelf.log("The registered work has timed out! ⏰")
             strongSelf.timedOut?(strongSelf)
             strongSelf.failure()
         }
         scheduler?.resume()
     }
     
+    /// Starts the timer for when to wait for retrying to perform the registered work.
     func startRetryDelayTimer() {
+        log("Will retry registered work. ⚙️")
         scheduler?.suspend()
         scheduler = Scheduler(startTime: retryDelay)
         scheduler?.task = { [weak self] in
@@ -220,6 +238,7 @@ private extension SGCircuitBreaker {
     
     /// Trips the circuit from an error.
     func tripCircuit() {
+        log("Circuit breaker has been tripped! 🔥")
         tripped?(self, lastError)
         reset()
     }
@@ -228,6 +247,20 @@ private extension SGCircuitBreaker {
     func beginWork() {
         scheduler?.suspend()
         startTimeoutTimer()
+        log("Will begin registered work. 🏗")
         workToPerform?(self)
+    }
+}
+
+
+// MARK: - Private Instance Methods For Logging
+private extension SGCircuitBreaker {
+    
+    /// Logs a message to the console.
+    ///
+    /// - Parameter message: A `String` representing the message to display.
+    func log(_ message: String) {
+        if !loggingEnabled { return }
+        print("SGCircuitBreaker: \(message)")
     }
 }
