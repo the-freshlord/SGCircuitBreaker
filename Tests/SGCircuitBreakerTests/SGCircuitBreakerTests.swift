@@ -94,6 +94,7 @@ extension SGCircuitBreakerTests {
     
     func testTimeout() {
         let timeoutExpectation = expectation(description: "Test timeout")
+        let successExpectation = expectation(description: "Test success timeout")
         circuitBreaker = SGCircuitBreaker(timeout: 3)
         circuitBreaker.workToPerform = { [weak self] (circuitBreaker) in
             switch circuitBreaker.failureCount {
@@ -102,9 +103,13 @@ extension SGCircuitBreakerTests {
             default:
                 self?.mockService.success { _, _  in
                     circuitBreaker.success()
-                    timeoutExpectation.fulfill()
+                    successExpectation.fulfill()
                 }
             }
+        }
+        circuitBreaker.timedOut = { [weak self] _ in
+            self?.mockService.cancel()
+            timeoutExpectation.fulfill()
         }
         circuitBreaker.start()
         waitForExpectations(timeout: 15, handler: nil)

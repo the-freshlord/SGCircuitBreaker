@@ -118,7 +118,7 @@ circuitBreaker.workToPerform = { [weak self] (circuitBreaker) in
 }
 ```
 
-Here we register the work that needs to be performed. The work is calling an asynchronous method on `mockService` that could fail. In the closure for the method `call`, we check if an error occured. If it did, we report to the circuit breaker that the work failed by calling `circuitBreaker.failure(error: error)` and pass the error. This will check if the maximum amount of failures have been met or not. If the maximum amount hasn't been met, then the circuit breaker would wait for a certain amount of time perform trying the work again. The circuit breaker would be in the `halfOpened` state. If the maximum amount of failures are met, then the circuit breaker trips. If an error didn't occur, then we report to the circuit breaker that the work was successful by calling `circuitBreaker.success`. This will reset the circuit breaker to its initial state to `closed`.
+Here we register the work that needs to be performed. The work is calling an asynchronous method on `mockService` that could fail. In the closure for the method `call`, we check if an error occured. If it did, we report to the circuit breaker that the work failed by calling `circuitBreaker.failure(error: error)` and pass the error. This will check if the maximum amount of failures have been met or not. If the maximum amount hasn't been met, then the circuit breaker would wait for a certain amount of time perform trying the work again. The circuit breaker would be in the `halfOpened` state. If the maximum amount of failures are met, then the circuit breaker trips. If an error didn't occur, then we report to the circuit breaker that the work was successful by calling `circuitBreaker.success()`. This will reset the circuit breaker to its initial state to `closed`.
 
 Now what happens if the circuit breaker trips. We want to be able to handle this and perform any error handling logic neccessary that will not break our application. We can register how to handle the circuit breaker tripping like so:
 
@@ -135,6 +135,15 @@ There might be some cases where you need to know if the circuit breaker was succ
 ```swift
 circuitBreaker.successful { (circuitBreaker) in
     print("Circuit breaker was successful")
+}
+```
+
+We can also handle when the circuit breaker reaches the set timeout. We can use it to cancel the registered work like so:
+
+```swift
+circuitBreaker.timedOut = { [weak self] (circuitBreaker) in
+    print("Timeout reached")
+    self?.mockService.cancel()
 }
 ```
 
@@ -169,6 +178,11 @@ circuitBreaker.tripped = { (circuitBreaker, error) in
 
 circuitBreaker.successful { (circuitBreaker) in
     print("Circuit breaker was successful")
+}
+
+circuitBreaker.timedOut = { [weak self] (circuitBreaker) in
+    print("Timeout reached")
+    self?.mockService.cancel()
 }
 
 circuitBreaker.start()

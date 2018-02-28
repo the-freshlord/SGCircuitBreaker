@@ -56,6 +56,10 @@ public class SGCircuitBreaker {
     /// registered work.
     public var successful: ((SGCircuitBreaker) -> Void)?
     
+    /// Closure that represents the registered handler for when the circuit breaker reaches the timeout. This
+    /// can be used for canceling the work.
+    public var timedOut: ((SGCircuitBreaker) -> Void)?
+    
     /// Number of failures allowed for retrying to performing the registered work before tripping.
     public let maxFailures: Int
     
@@ -188,12 +192,14 @@ public extension SGCircuitBreaker {
 // MARK: - Private Instance Methods For Timer
 private extension SGCircuitBreaker {
     
-    /// Starts the timer for when the registered work timesout.
+    /// Starts the timer for when the registered work timed out.
     func startTimeoutTimer() {
         scheduler?.suspend()
         scheduler = Scheduler(startTime: timeout)
         scheduler?.task = { [weak self] in
-            self?.failure()
+            guard let strongSelf = self else { return }
+            strongSelf.timedOut?(strongSelf)
+            strongSelf.failure()
         }
         scheduler?.resume()
     }
