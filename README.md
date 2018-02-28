@@ -130,7 +130,15 @@ circuitBreaker.tripped = { (circuitBreaker, error) in
 
 Here we register a handler for when the circuit breaker trips. An `Error?` is passed that represents the last error that was reported. At this point, the circuit breaker is in the `open` state.
 
-Once we have set up our handlers for the work to be performed and for the circuit breaker being tripped, we need to start the circuit breaker like so:
+There might be some cases where you need to know if the circuit breaker was successful. This also means when a success is reported to the circuit breaker. We can register a handler like so:
+
+```swift
+circuitBreaker.successful { (circuitBreaker) in
+    print("Circuit breaker was successful")
+}
+```
+
+Once we have set up our handlers, we need to start the circuit breaker like so:
 
 ```swift
 circuitBreaker.start()
@@ -157,6 +165,10 @@ circuitBreaker.workToPerform = { [weak self] (circuitBreaker) in
 
 circuitBreaker.tripped = { (circuitBreaker, error) in
     print("Error occured with breaker: \(error)")
+}
+
+circuitBreaker.successful { (circuitBreaker) in
+    print("Circuit breaker was successful")
 }
 
 circuitBreaker.start()

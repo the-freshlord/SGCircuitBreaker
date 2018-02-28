@@ -52,6 +52,10 @@ public class SGCircuitBreaker {
     /// This can be fired if the registered work keeps failing and the max number of retries has been reached.
     public var tripped: ((SGCircuitBreaker, Error?) -> Void)?
     
+    /// Closure that represents the registered handler for when the circuit breaker successfully completed the
+    /// registered work.
+    public var successful: ((SGCircuitBreaker) -> Void)?
+    
     /// Number of failures allowed for retrying to performing the registered work before tripping.
     public let maxFailures: Int
     
@@ -94,19 +98,6 @@ public class SGCircuitBreaker {
     
     /// The time interval for the last failure.
     private var lastFailureTime: TimeInterval?
-    
-    
-    /// An enum thst keeps track of the state of the timer.
-    ///
-    /// - suspended: The timer is not being used.
-    /// - resumed: The timer is being used.
-    private enum TimerState {
-        case suspended
-        case resumed
-    }
-    
-    /// The current state of the timer.
-    private var timerState: TimerState = .suspended
     
     
     // MARK: - Initializers
@@ -158,6 +149,7 @@ public extension SGCircuitBreaker {
     /// Reports to the circuit breaker that the registered work was successful.
     func success() {
         reset()
+        successful?(self)
     }
     
     /// Reports to the circuit breaker that the registered work failed.
