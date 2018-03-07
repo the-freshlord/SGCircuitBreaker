@@ -1,15 +1,40 @@
-# SGCircuitBreaker
+<p align="center">
+	<img src="./Assets/sgcircuitbreakerLogo.jpg">
+</p>
+
+<p align="center">
+    <a href="https://travis-ci.org/eman6576/SGCircuitBreaker.svg?branch=master">
+        <img src="https://travis-ci.org/eman6576/SGCircuitBreaker.svg?branch=master" alt="Travis CI Status">
+    </a>
+    <a href="https://codecov.io/gh/eman6576/SGCircuitBreaker">
+        <img src="https://codecov.io/gh/eman6576/SGCircuitBreaker/branch/master/graph/badge.svg" alt="CodeCov">
+    </a>
+    <a href="https://swift.org/">
+        <img src="https://img.shields.io/badge/Swift-4.0-orange.svg?style=flat" alt="CodeCov">
+    </a>
+	<a href="https://cocoapods.org/pods/SGCircuitBreaker">
+		<img src="https://img.shields.io/cocoapods/v/SGSwiftyBind.svg" alt="Pods Version">
+	</a>
+	<a href="https://github.com/Carthage/Carthage">
+		<img src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat" alt="Carthage Compatible">
+	</a>
+	<a href="https://swift.org/package-manager/">
+		<img src="https://img.shields.io/badge/SwiftPM-compatible-4BC51D.svg?style=flat" alt="Swift PM Compatible">
+	</a>
+	<a href="https://github.com/eman6576/SGCircuitBreaker/blob/master/LICENSE">
+		<img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License">
+	</a>
+    <a href="https://img.shields.io/badge/platform-iOS%20%7C%20macOS%20%7C%20Linux-lightgrey.svg">
+		<img src="https://img.shields.io/badge/platform-iOS%20%7C%20macOS%20%7C%20Linux-lightgrey.svg" alt="Platforms">
+	</a>
+	<a href="https://github.com/RichardLitt/standard-readme">
+		<img src="https://img.shields.io/badge/standard--readme-OK-green.svg" alt="Standard README Compliant">
+	</a>
+</p>
+
+----------------
 
 A Swift implementation of the Circuit Breaker design pattern
-
-[![Build Status](https://travis-ci.org/eman6576/SGCircuitBreaker.svg?branch=master)](https://travis-ci.org/eman6576/SGCircuitBreaker)
-[![codecov](https://codecov.io/gh/eman6576/SGCircuitBreaker/branch/master/graph/badge.svg)](https://codecov.io/gh/eman6576/SGCircuitBreaker)
-![Swift 4.0](https://img.shields.io/badge/Swift-4.0-orange.svg?style=flat)
-[![CocoaPods](https://img.shields.io/cocoapods/v/SGSwiftyBind.svg)](https://cocoapods.org/pods/SGCircuitBreaker)
-[![Carthage](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
-[![DUB](https://img.shields.io/dub/l/vibe-d.svg)](https://github.com/eman6576/SGCircuitBreaker/blob/master/LICENSE)
-[![platform](https://img.shields.io/badge/platform-iOS%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
 ## Table of Contents
 
